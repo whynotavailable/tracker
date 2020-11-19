@@ -4,7 +4,7 @@ import { Command } from 'commander'
 import {parser} from "./parser";
 
 import * as fs from 'fs'
-import {parseISO, formatISO} from "date-fns";
+import {parseISO, formatISO, eachDayOfInterval, startOfWeek, endOfWeek} from "date-fns";
 import {summaryReport, totalsReport} from "./report";
 import * as commander from "commander";
 
@@ -42,17 +42,60 @@ setupReport('summary')
         summaryReport(trackers);
     })
 
-function getFilteredTrackers({ tag }: ReportFilter) {
-    const files = fs.readdirSync('.').filter(x => x.endsWith('.trk'))
+function getFilteredTrackers(filter: ReportFilter) {
+    let files: string[];
+
+    if (filter.start) {
+        let start = parseISO(filter.start);
+
+        let end = new Date();
+
+        if (filter.end) {
+            end = parseISO(filter.end);
+        }
+
+        let days = eachDayOfInterval({
+            start: start, end: end
+        });
+
+        files = days.map(x => formatISO(x, {
+            representation: 'date'
+        })).map(x => `${x}.trk`)
+    }
+    else if (filter.today) {
+        files = [`${formatDate(new Date())}.trk`]
+    }
+    else if (filter.week) {
+        let start = startOfWeek(new Date());
+        let end = endOfWeek(new Date());
+
+        let days = eachDayOfInterval({
+            start: start, end: end
+        });
+
+        files = days.map(x => formatISO(x, {
+            representation: 'date'
+        })).map(x => `${x}.trk`)
+    }
+    else {
+        files = fs.readdirSync('.').filter(x => x.endsWith('.trk'))
+    }
+
     let trackers = files.flatMap(file => {
         return getTrackers(file);
     })
 
-    if (tag !== undefined) {
-        trackers = trackers.filter(x => x.tags.indexOf(`#${tag}`) !== -1)
+    if (filter.tag !== undefined) {
+        trackers = trackers.filter(x => x.tags.indexOf(`#${filter.tag}`) !== -1)
     }
 
     return trackers;
+}
+
+function formatDate(date: Date): string {
+    return formatISO(date, {
+        representation: 'date'
+    });
 }
 
 function getTrackers(file: string): Tracker[] {

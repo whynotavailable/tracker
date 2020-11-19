@@ -1,0 +1,36 @@
+This is a thing
+after 7 is PM if the am/pm is missing
+
+tags.txt has "valid" tags and the validation function will display invalid tags
+
+stuff up here is generic to the tracker
+
+#support #my-test
+
+tags can be anywhere, but part of the header is ideal.
+
+1:13 am - 1:30 am
+
+did some stuff, blaa blaa blaa
+
+Stuff in here should match the time segment above
+
+> 1:16 am
+
+Times with a carrot are within a segment, and part of a chronology. This is for keeping
+track of events in time. An example is when you joined the meeting.
+
+1:50 am
+
+Segments without a ending are assumed to have ended in the same minute. In order to declare something not yet
+ended, use a trailing dash.
+
+1:13 am - 1:30 am
+
+did some other stuff.
+
+2:00 -
+
+Found issue with thing, working on it.
+
+---

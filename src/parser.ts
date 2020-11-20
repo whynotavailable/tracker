@@ -29,7 +29,7 @@ export function parser(data: string, date: string): Tracker[] {
             continue;
         }
 
-        if (/^[0-9]{1,2}:[0-9]{1,2}( am)?( -)?( [0-9]{1,2}:[0-9]{1,2}( am)?)?$/i.test(line)) {
+        if (/^[0-9]{1,2}:[0-9]{1,2}( am| pm)?( -)?( [0-9]{1,2}:[0-9]{1,2}( am| pm)?)?$/i.test(line)) {
             const parts = line.split('-')
             currentSegment = {
                 start: getProperTime(parts[0]),
@@ -43,9 +43,9 @@ export function parser(data: string, date: string): Tracker[] {
             continue;
         }
 
-        if (currentSegment !== null && /^> [0-9]{1,2}:[0-9]{1,2}( am)?$/i.test(line)) {
+        if (currentSegment !== null && /^> [0-9]{1,2}:[0-9]{1,2}( am| pm)?$/i.test(line)) {
             currentPoint = {
-                time: getProperTime(/[0-9]{1,2}:[0-9]{1,2}( am)?/.exec(line)[0]),
+                time: getProperTime(/[0-9]{1,2}:[0-9]{1,2}( am| pm)?/i.exec(line)[0]),
                 description: ''
             }
             currentSegment.points.push(currentPoint);

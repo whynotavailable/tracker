@@ -25,6 +25,7 @@ export function parser(data: string, date: string): Tracker[] {
             currentTracker = null;
             currentSegment = null;
             currentPoint = null;
+            tagsList = {};
             continue;
         }
 

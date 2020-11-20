@@ -5,7 +5,7 @@ tags.txt has "valid" tags and the validation function will display invalid tags
 
 stuff up here is generic to the tracker
 
-#support #my-test
+#support #my-test #meeting
 
 tags can be anywhere, but part of the header is ideal.
 
@@ -29,8 +29,14 @@ ended, use a trailing dash.
 
 did some other stuff.
 
-2:00 -
+2:00 - 2:21
 
 Found issue with thing, working on it.
 
 ---
+
+asd
+
+#meeting
+
+3:32 - 3:45

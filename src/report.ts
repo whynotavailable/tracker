@@ -65,7 +65,7 @@ function hr() {
 function diffToString(diff: number): string {
     let hours = Math.floor(diff / 60);
     let minutes = diff % 60;
-    return `${hours}:${minutes}`;
+    return `${hours}:${minutes.toString().padStart(2, '0')}`;
 }
 
 // Returns a minute value based on the time given. It counts from midnight

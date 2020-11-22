@@ -1,4 +1,4 @@
-export function parser(data: string, date: string, empty: boolean): Tracker[] {
+export function parser(data: string, date: string, empty: boolean, file: string): Tracker[] {
     let trackers: Tracker[] = [];
     let currentTracker: Tracker = null;
 
@@ -17,6 +17,7 @@ export function parser(data: string, date: string, empty: boolean): Tracker[] {
                 date,
                 meta: {},
                 todos: [],
+                file,
                 tags: []
             };
 
@@ -60,7 +61,7 @@ export function parser(data: string, date: string, empty: boolean): Tracker[] {
         if (todo !== null) {
             currentTracker.todos.push({
                 description: todo[1].trim(),
-                by: todo[1] || null
+                by: todo[3] || null
             })
             continue;
         }

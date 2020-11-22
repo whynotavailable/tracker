@@ -23,6 +23,7 @@ interface Tracker {
     tags: string[];
     meta: Record<string, string>;
     todos: Todo[];
+    file: string;
     segments: Segment[];
 }
 

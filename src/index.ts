@@ -8,6 +8,7 @@ import {parseISO, formatISO, eachDayOfInterval, startOfWeek, endOfWeek} from "da
 import {dumpReport, summaryReport, totalsReport} from "./report";
 import * as commander from "commander";
 import {archive} from "./archive";
+import {setupTodos} from "./todos";
 
 const program = new Command();
 
@@ -53,7 +54,7 @@ program.command('archive')
         archive(files)
     })
 
-function getCurrentFiles() {
+export function getCurrentFiles() {
     return fs.readdirSync('.').filter(x => x.endsWith('.trk'));
 }
 
@@ -113,23 +114,27 @@ function formatDate(date: Date): string {
     });
 }
 
-function getTrackers(file: string, empty: boolean): Tracker[] {
+export function getTrackers(file: string, empty: boolean): Tracker[] {
     let parts = file.split('-');
     let archiveFile = `${parts[0]}/${parts[1]}/${file}`;
+
+    let actualFile = '';
 
     let data = '';
 
     if (fs.existsSync(file)) {
         data = fs.readFileSync(file).toString();
+        actualFile = file;
     }
     else if (fs.existsSync(archiveFile)) {
         data = fs.readFileSync(archiveFile).toString()
+        actualFile = archiveFile;
     }
     else {
         return [];
     }
 
-    return parser(data, file.split('.')[0], empty);
+    return parser(data, file.split('.')[0], empty, actualFile);
 }
 
 program.command('current')
@@ -147,5 +152,7 @@ program.command('current')
 
         console.log(fileName);
     })
+
+setupTodos(program);
 
 program.parse(process.argv);

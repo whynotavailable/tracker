@@ -1,6 +1,6 @@
 {
   "name": "@whynotdothat/tracker",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A tool to help organize your work life.",
   "main": "src/index.ts",
   "scripts": {

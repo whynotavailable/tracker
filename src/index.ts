@@ -7,18 +7,12 @@ import * as fs from 'fs'
 import {parseISO, formatISO, eachDayOfInterval, startOfWeek, endOfWeek} from "date-fns";
 import {summaryReport, totalsReport} from "./report";
 import * as commander from "commander";
+import {archive} from "./archive";
 
 const program = new Command();
 
-const { setup } = require('./setup');
-
-program.command('setup')
-    .description('Setup the current days file')
-    .action(() => {
-       setup();
-    });
-
-let reportCommand = program.command('report');
+let reportCommand = program.command('report')
+    .description('run a report');
 
 function setupReport(name: string): commander.Command {
     return reportCommand.command(name)
@@ -30,6 +24,7 @@ function setupReport(name: string): commander.Command {
 }
 
 setupReport('totals')
+    .description('report on hours grouped by tag')
     .option('-b, --group-by <span>', 'what to group by (day, none)', 'day')
     .action((opt) => {
         const trackers = getFilteredTrackers(opt);
@@ -37,10 +32,22 @@ setupReport('totals')
     })
 
 setupReport('summary')
+    .description('show summary of trackers')
     .action(opt => {
         const trackers = getFilteredTrackers(opt);
         summaryReport(trackers);
     })
+
+program.command('archive')
+    .description('archive old files')
+    .action(() => {
+        let files = getCurrentFiles().filter(x => x !== `${formatDate(new Date())}.trk`);
+        archive(files)
+    })
+
+function getCurrentFiles() {
+    return fs.readdirSync('.').filter(x => x.endsWith('.trk'));
+}
 
 function getFilteredTrackers(filter: ReportFilter) {
     let files: string[];
@@ -78,7 +85,7 @@ function getFilteredTrackers(filter: ReportFilter) {
         })).map(x => `${x}.trk`)
     }
     else {
-        files = fs.readdirSync('.').filter(x => x.endsWith('.trk'))
+        files = getCurrentFiles();
     }
 
     let trackers = files.flatMap(file => {
@@ -131,13 +138,6 @@ program.command('current')
         }
 
         console.log(fileName);
-    })
-
-program.command('test')
-    .action(() => {
-        let d = parseISO('2020-11-19');
-        //console.log(setHours(d, 32));
-        const out = parser(fs.readFileSync('2020-01-01.trk').toString(), '2020-11-19');
     })
 
 program.parse(process.argv);

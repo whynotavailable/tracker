@@ -1,4 +1,4 @@
-export function parser(data: string, date: string): Tracker[] {
+export function parser(data: string, date: string, empty: boolean): Tracker[] {
     let trackers: Tracker[] = [];
     let currentTracker: Tracker = null;
 
@@ -15,6 +15,8 @@ export function parser(data: string, date: string): Tracker[] {
                 description: '',
                 segments: [],
                 date,
+                meta: {},
+                todos: [],
                 tags: []
             };
 
@@ -35,6 +37,7 @@ export function parser(data: string, date: string): Tracker[] {
                 start: getProperTime(parts[0]),
                 end: getProperTime(parts[1] === void 0 ? parts[0] : parts[1]),
                 description: '',
+                meta: {},
                 points: []
             }
             currentTracker.segments.push(currentSegment);
@@ -49,6 +52,29 @@ export function parser(data: string, date: string): Tracker[] {
                 description: ''
             }
             currentSegment.points.push(currentPoint);
+            continue;
+        }
+
+        let todo = /^TODO: (.*?)(by ([0-9]{4}-[0-9]{2}-[0-9]{2}))?$/.exec(line);
+
+        if (todo !== null) {
+            currentTracker.todos.push({
+                description: todo[1].trim(),
+                by: todo[1] || null
+            })
+            continue;
+        }
+
+        let metaData = /^:([a-z\-]+):(.+?)$/.exec(line);
+
+        if (metaData !== null) {
+            if (currentSegment !== null) {
+                currentSegment.meta[metaData[1]] = metaData[2]
+            }
+            else {
+                currentTracker.meta[metaData[1]] = metaData[2];
+            }
+
             continue;
         }
 
@@ -73,7 +99,12 @@ export function parser(data: string, date: string): Tracker[] {
         }
     }
 
-    return trackers.filter(x => x.segments.length > 0);
+    if (empty) {
+        return trackers;
+    }
+    else {
+        return trackers.filter(x => x.segments.length > 0);
+    }
 }
 
 function getProperTime(time: string): string {
@@ -89,7 +120,7 @@ function getProperTime(time: string): string {
         if (hourPart === 12) {
             time += ' PM';
         }
-        if (hourPart >= 7) {
+        else if (hourPart >= 7) {
             time += ' AM';
         }
         else {

@@ -1,3 +1,7 @@
+export function dumpReport(trackers: Tracker[]) {
+    console.log(JSON.stringify(trackers, null, '  '));
+}
+
 export function summaryReport(trackers: Tracker[]) {
     for (let tracker of trackers) {
         console.log(tracker.date)

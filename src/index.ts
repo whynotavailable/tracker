@@ -5,7 +5,7 @@ import {parser} from "./parser";
 
 import * as fs from 'fs'
 import {parseISO, formatISO, eachDayOfInterval, startOfWeek, endOfWeek} from "date-fns";
-import {summaryReport, totalsReport} from "./report";
+import {dumpReport, summaryReport, totalsReport} from "./report";
 import * as commander from "commander";
 import {archive} from "./archive";
 
@@ -21,7 +21,15 @@ function setupReport(name: string): commander.Command {
         .option('-e, --end <end>', 'end date')
         .option('--today', 'filter just for today')
         .option('--week', 'filter just for current week')
+        .option('--empty', 'return trackers without segments', false)
 }
+
+setupReport('dump')
+    .description('report that dumps trackers via JSON')
+    .action((opt) => {
+        const trackers = getFilteredTrackers(opt);
+        dumpReport(trackers);
+    });
 
 setupReport('totals')
     .description('report on hours grouped by tag')
@@ -89,7 +97,7 @@ function getFilteredTrackers(filter: ReportFilter) {
     }
 
     let trackers = files.flatMap(file => {
-        return getTrackers(file);
+        return getTrackers(file, filter.empty);
     })
 
     if (filter.tag !== undefined) {
@@ -105,7 +113,7 @@ function formatDate(date: Date): string {
     });
 }
 
-function getTrackers(file: string): Tracker[] {
+function getTrackers(file: string, empty: boolean): Tracker[] {
     let parts = file.split('-');
     let archiveFile = `${parts[0]}/${parts[1]}/${file}`;
 
@@ -121,7 +129,7 @@ function getTrackers(file: string): Tracker[] {
         return [];
     }
 
-    return parser(data, file.split('.')[0]);
+    return parser(data, file.split('.')[0], empty);
 }
 
 program.command('current')

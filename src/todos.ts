@@ -57,6 +57,12 @@ function listTodos() {
         return getTrackers(file, true);
     }).filter(x => x.todos.length > 0);
 
+    let filesWithTodos = trackers.map(x => x.file);
+
+    filesWithTodos = _.intersection(todoFiles, filesWithTodos);
+
+    fs.writeFileSync('todos.txt', filesWithTodos.join('\n') + '\n');
+
     let todos = trackers.flatMap(x => x.todos.map(todo => {
         let date: Date = null;
         let sortKey = 0;

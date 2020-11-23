@@ -9,7 +9,6 @@ interface Todo {
 }
 
 interface Segment {
-    // These are unix timestamps
     start: string;
     end: string;
     meta: Record<string, string>;
